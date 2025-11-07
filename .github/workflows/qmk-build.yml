@@ -1,30 +1,45 @@
-name: QMK Corne Build
+name: Build QMK Firmware
 
 on:
   push:
-    branches:
-      - miryoku_custom
+  pull_request:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout your keymap repo
+        uses: actions/checkout@v4
 
-    - uses: d3adb5/build-qmk-fw@v1
-      with:
-        keyboard: crkbd/r2g
-        keymap: miryoku_custom
-        local-keymap-path: keyboards/crkbd/keymaps/miryoku_custom  # optional
+      - name: Checkout QMK Firmware (Full, With Submodules)
+        uses: actions/checkout@v4
+        with:
+          repository: qmk/qmk_firmware
+          path: qmk_firmware
+          submodules: recursive
 
-    - name: Rename firmware
-      run: |
-        mv *.bin corne_left.bin || true
-        # Note: the action may produce one firmware or two depending on split config
+      - name: Copy your keymap into QMK
+        run: |
+          mkdir -p qmk_firmware/keyboards/crkbd/keymaps/miryoku_custom
+          cp -R keyboards/crkbd/keymaps/miryoku_custom/* qmk_firmware/keyboards/crkbd/keymaps/miryoku_custom/
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: corne-firmware
-        path: corne_left.bin
+      - name: Install build dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y git python3-pip
+          pip3 install qmk
+
+      - name: Setup QMK
+        working-directory: qmk_firmware
+        run: qmk setup --yes
+
+      - name: Compile
+        working-directory: qmk_firmware
+        run: qmk compile -kb crkbd/r2g -km miryoku_custom
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: crkbd-r2g-miryoku
+          path: qmk_firmware/*.hex
