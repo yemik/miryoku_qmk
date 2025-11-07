@@ -2,7 +2,7 @@
 # https://github.com/manna-harbour/miryoku
 
 OLED_ENABLE     = yes
-OLED_DRIVER     = SSD1306
+# OLED_DRIVER     = SSD1306
 LTO_ENABLE      = yes
 RGBLIGHT_ENABLE = yes
 
