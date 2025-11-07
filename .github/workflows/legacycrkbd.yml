@@ -4,7 +4,7 @@ on:
   workflow_dispatch:   # Allows manual runs
   push:
     branches:
-      - main
+      - miryoku_legacy
 
 jobs:
   build:
