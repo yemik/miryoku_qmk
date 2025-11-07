@@ -19,3 +19,5 @@ USER_NAME = manna-harbour_miryoku
 
 SRC += $(QMK_KEYBOARD_ROOT)/users/manna-harbour_miryoku/manna-harbour_miryoku.c
 USER_INCLUDE = $(QMK_KEYBOARD_ROOT)/users/manna-harbour_miryoku
+USER_INCLUDE += $(QMK_KEYBOARD_ROOT)/users/manna-harbour_miryoku/miryoku_babel
+
