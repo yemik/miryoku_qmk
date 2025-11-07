@@ -94,7 +94,9 @@ U_NP,              U_NP,              LT(U_MEDIA,KC_ESC),LT(U_NAV,KC_SPC),  LT(U
 
 #ifdef RGB_MATRIX_ENABLE
 #    define RGBLED_NUM       54 // Number of LEDs
-#    define RGB_MATRIX_LED_COUNT RGBLED_NUM
+#ifndef RGB_MATRIX_LED_COUNT
+#   define RGB_MATRIX_LED_COUNT RGBLED_NUM
+#endif
 #    define RGB_MATRIX_SPLIT \
         { 27, 27 }
 #    define SPLIT_TRANSPORT_MIRROR
@@ -145,7 +147,9 @@ U_NP,              U_NP,              LT(U_MEDIA,KC_ESC),LT(U_NAV,KC_SPC),  LT(U
 #define IGNORE_MOD_TAP_INTERRUPT
 
 // Enable rapid switch from tap to hold, disables double tap hold auto-repeat.
-#define QUICK_TAP_TERM 0
+#ifndef QUICK_TAP_TERM
+#   define QUICK_TAP_TERM 0
+#endif
 
 // Auto Shift
 #define NO_AUTO_SHIFT_ALPHA
