@@ -1,0 +1,33 @@
+# .github/workflows/build-crkbd.yml
+name: Build CRKBD R2G
+
+on:
+  push:
+    branches:
+      - miryoku_legacy
+  pull_request:
+    branches:
+      - miryoku_legacy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QMK environment
+        run: |
+          sudo apt update
+          sudo apt install -y python3 python3-pip git wget unzip
+          pip3 install qmk
+
+      - name: Initialize QMK
+        run: |
+          qmk setup -y
+
+      - name: Compile CRKBD R2G
+        run: |
+          cd qmk_firmware
+          qmk compile -kb crkbd/rev2g -km manna-harbour_miryoku
