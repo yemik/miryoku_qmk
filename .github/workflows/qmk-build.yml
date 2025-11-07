@@ -11,28 +11,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    - name: Set up QMK
-      uses: qmk/qmk_firmware-action@main
-
-    - name: Compile left half
-      run: qmk compile -kb crkbd/r2g -km miryoku_custom -bl dfu-split-left
-
-    - name: Compile right half
-      run: qmk compile -kb crkbd/r2g -km miryoku_custom -bl dfu-split-right
+    - uses: d3adb5/build-qmk-fw@v1
+      with:
+        keyboard: crkbd/r2g
+        keymap: miryoku_custom
+        local-keymap-path: keyboards/crkbd/keymaps/miryoku_custom  # optional
 
     - name: Rename firmware
       run: |
-        mv crkbd_r2g_miryoku_custom_dfu-split-left.bin corne_left.bin
-        mv crkbd_r2g_miryoku_custom_dfu-split-right.bin corne_right.bin
-      continue-on-error: true
+        mv *.bin corne_left.bin || true
+        # Note: the action may produce one firmware or two depending on split config
 
-    - name: Upload firmware
-      uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
         name: corne-firmware
-        path: |
-          corne_left.bin
-          corne_right.bin
+        path: corne_left.bin
