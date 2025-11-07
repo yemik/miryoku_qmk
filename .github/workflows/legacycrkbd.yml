@@ -10,32 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout QMK Firmware (full repo with submodules)
       - name: Checkout QMK Firmware
         uses: actions/checkout@v4
         with:
           repository: qmk/qmk_firmware
+          path: qmk_firmware
           submodules: recursive
-          fetch-depth: 0
 
-      # 2. Install dependencies
-      - name: Install build dependencies
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y git python3-pip
           pip3 install qmk
 
-      # 3. Setup QMK environment
       - name: Setup QMK
         working-directory: qmk_firmware
         run: qmk setup --yes
 
-      # 4. Compile the firmware
-      - name: Compile CRKBD R2G with default Miryoku keymap
+      - name: Compile CRKBD R2G default Miryoku keymap
         working-directory: qmk_firmware
         run: qmk compile -kb crkbd/r2g -km miryoku
 
-      # 5. Upload firmware as an artifact
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
