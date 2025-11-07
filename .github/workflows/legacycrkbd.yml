@@ -13,17 +13,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      
       - name: Set up QMK environment
-        uses: qmk/qmk_firmware@v1
-        with:
-          submodules: recursive
-
-      - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y avr-libc gcc-avr dfu-programmer dfu-util gcc-arm-none-eabi avrdude dfu-util
-
-      - name: Compile keymap
+          sudo apt update
+          sudo apt install -y python3 python3-pip git wget unzip
+          pip3 install qmk
+      
+      - name: Initialize QMK
+        run: qmk setup -y
+      
+      - name: Compile CRKBD R2G
         run: |
-          qmk compile -kb crkbd/r2g -km miryoku
+          cd qmk_firmware
+          qmk compile -kb crkbd/r2g -km manna-harbour_miryoku
