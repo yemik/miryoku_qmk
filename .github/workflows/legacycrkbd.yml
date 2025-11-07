@@ -1,38 +1,46 @@
-name: Build CRKBD R2G Miryoku Firmware
+name: Build Miryoku CRKBD Firmware
 
 on:
   push:
+    branches:
+      - '**'  # triggers on all branches
   pull_request:
-  workflow_dispatch:
+    branches:
+      - '**'
+  workflow_dispatch:   # allows manual triggering
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout QMK Firmware
+      # 1. Checkout your fork (with Miryoku keymap)
+      - name: Checkout your fork
         uses: actions/checkout@v4
         with:
-          repository: qmk/qmk_firmware
-          path: qmk_firmware
+          repository: YOUR_USERNAME/miryoku_qmk  # <- replace with your GitHub username
           submodules: recursive
 
-      - name: Install dependencies
+      # 2. Install dependencies
+      - name: Install QMK dependencies
         run: |
           sudo apt update
           sudo apt install -y git python3-pip
           pip3 install qmk
 
+      # 3. Setup QMK
       - name: Setup QMK
-        working-directory: qmk_firmware
-        run: qmk setup --yes
+        run: |
+          qmk setup --yes
 
-      - name: Compile CRKBD R2G default Miryoku keymap
-        working-directory: qmk_firmware
-        run: qmk compile -kb crkbd/r2g -km miryoku
+      # 4. Compile firmware
+      - name: Compile CRKBD R2G with Miryoku
+        run: |
+          qmk compile -kb crkbd/r2g -km miryoku
 
-      - name: Upload firmware
+      # 5. Upload the compiled firmware as artifact
+      - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
           name: crkbd-r2g-miryoku
-          path: qmk_firmware/*.hex
+          path: ./*.hex
