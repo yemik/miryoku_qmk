@@ -3,44 +3,50 @@ name: Build Miryoku CRKBD Firmware
 on:
   push:
     branches:
-      - '**'  # triggers on all branches
+      - '**'       # triggers on any branch push
   pull_request:
     branches:
       - '**'
-  workflow_dispatch:   # allows manual triggering
+  workflow_dispatch:  # allows manual trigger
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout your fork (with Miryoku keymap)
       - name: Checkout your fork
         uses: actions/checkout@v4
         with:
-          repository: yemik/miryoku_qmk  # <- replace with your GitHub username
+          fetch-depth: 0
+
+      - name: Checkout QMK Firmware (with submodules)
+        uses: actions/checkout@v4
+        with:
+          repository: qmk/qmk_firmware
+          path: qmk_firmware
           submodules: recursive
 
-      # 2. Install dependencies
+      - name: Copy Miryoku keymap into QMK firmware
+        run: |
+          mkdir -p qmk_firmware/keyboards/crkbd/keymaps/manna_harbour
+          cp -R users/manna-harbour_miryoku/* qmk_firmware/keyboards/crkbd/keymaps/manna_harbour/
+
       - name: Install QMK dependencies
         run: |
           sudo apt update
           sudo apt install -y git python3-pip
           pip3 install qmk
 
-      # 3. Setup QMK
       - name: Setup QMK
-        run: |
-          qmk setup --yes
+        working-directory: qmk_firmware
+        run: qmk setup --yes
 
-      # 4. Compile firmware
-      - name: Compile CRKBD R2G with Miryoku
-        run: |
-          qmk compile -kb crkbd/r2g -km miryoku
+      - name: Compile firmware
+        working-directory: qmk_firmware
+        run: qmk compile -kb crkbd/r2g -km manna_harbour
 
-      # 5. Upload the compiled firmware as artifact
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
           name: crkbd-r2g-miryoku
-          path: ./*.hex
+          path: qmk_firmware/*.hex
