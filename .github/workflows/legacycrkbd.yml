@@ -1,4 +1,4 @@
-name: Build QMK Firmware
+name: Build CRKBD R2G Miryoku Firmware
 
 on:
   push:
@@ -8,10 +8,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      # 1. Checkout your fork containing your Miryoku keymap
       - name: Checkout your fork
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      # 2. Checkout the official QMK Firmware repository (with submodules)
       - name: Checkout QMK Firmware
         uses: actions/checkout@v4
         with:
@@ -19,21 +24,31 @@ jobs:
           path: qmk_firmware
           submodules: recursive
 
+      # 3. Copy your fork's default Miryoku keymap into QMK Firmware
+      - name: Copy default Miryoku keymap
+        run: |
+          mkdir -p qmk_firmware/keyboards/crkbd/keymaps/miryoku
+          cp -R keyboards/crkbd/keymaps/miryoku/* qmk_firmware/keyboards/crkbd/keymaps/miryoku/
+
+      # 4. Install dependencies
       - name: Install build dependencies
         run: |
           sudo apt update
           sudo apt install -y git python3-pip
           pip3 install qmk
 
+      # 5. Setup QMK environment
       - name: Setup QMK
         working-directory: qmk_firmware
         run: qmk setup --yes
 
-      - name: Compile
+      # 6. Compile the firmware
+      - name: Compile CRKBD R2G with Miryoku
         working-directory: qmk_firmware
         run: qmk compile -kb crkbd/r2g -km miryoku
 
-      - name: Upload firmware artifact
+      # 7. Upload firmware as an artifact
+      - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: crkbd-r2g-miryoku
