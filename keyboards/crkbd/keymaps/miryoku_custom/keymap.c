@@ -1,4 +1,5 @@
 #include "miryoku.h"
+#include "custom_config.h"
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     MIRYOKU_QWERTY
